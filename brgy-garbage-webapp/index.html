@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GarboTrack — Login</title>
+
+  <link rel="stylesheet" href="css/garbotrack.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(160deg, #2e8b57, #66bb6a);
+    }
+    .login-box {
+      width: 380px;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 35px rgba(0,0,0,0.15);
+      animation: fadeIn 0.6s ease;
+    }
+    .login-box h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2e8b57;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+    .input-field {
+      margin: 12px 0;
+    }
+    .input-field label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2e2e2e;
+    }
+    .input-field input,
+    .input-field select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #b9dfc4;
+      outline: none;
+      margin-top: 4px;
+      transition: 0.3s;
+    }
+    .input-field input:focus,
+    .input-field select:focus {
+      border-color: #2e8b57;
+      box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.2);
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: #2e8b57;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      margin-top: 15px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-login:hover {
+      background: #256945;
+      transform: translateY(-2px);
+    }
+
+    .signup-link {
+      text-align: center;
+      margin-top: 14px;
+    }
+    .signup-link a {
+      color: #2e8b57;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+
+</head>
+<body>
+
+  <div class="login-box">
+    <h1><i class="fa-solid fa-recycle"></i> GarboTrack</h1>
+
+    <form id="loginForm">
+
+      <div class="input-field">
+        <label>Email</label>
+        <input type="email" id="email" required placeholder="Enter email">
+      </div>
+
+      <div class="input-field">
+        <label>Password</label>
+        <input type="password" id="password" required placeholder="Enter password">
+      </div>
+
+      <div class="input-field">
+        <label>Select Role</label>
+        <select id="role">
+          <option value="resident">Resident</option>
+          <option value="collector">Collector</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn-login">
+        <i class="fa-solid fa-right-to-bracket"></i> Login
+      </button>
+
+      <div class="signup-link">
+        <p>No account yet? <a href="signup.html">Sign up here</a></p>
+      </div>
+
+    </form>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const role = document.getElementById("role").value;
+
+      try {
+        const res = await window.GARBO.supabase.auth.signInWithPassword({ email, password });
+        if (res.error) throw res.error;
+
+        localStorage.setItem("garbo_role", role);
+
+        if (role === "resident") window.location.href = "resident.html";
+        else if (role === "collector") window.location.href = "collector.html";
+        else window.location.href = "admin.html";
+
+      } catch (err) {
+        alert("Login failed: " + err.message);
+      }
+    });
+  </script>
+
+</body>
+</html>

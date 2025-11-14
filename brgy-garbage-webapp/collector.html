@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Collector Dashboard — GarboTrack</title>
+
+<link rel="stylesheet" href="css/garbotrack.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+  .collector-grid { display: grid; gap: 20px; padding: 20px; grid-template-columns: 1fr; }
+  @media (min-width:1000px){ .collector-grid { grid-template-columns: 1fr 1fr; } }
+
+  .card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    animation: fadeIn .4s ease;
+  }
+
+  .form-inline input, .form-inline select {
+    padding: 10px;
+    border: 1px solid #cce3d4;
+    border-radius: 10px;
+    margin-right: 10px;
+  }
+
+  .form-inline { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .btn-primary { background:#2e8b57; color:white; padding:10px 14px; border-radius:10px; border:none; }
+  .btn-primary:hover { background:#256945; }
+
+  .btn-muted { background:#d3e8d8; color:#2e8b57; padding:10px 14px; border-radius:10px; border:none; }
+
+  #map {
+    width: 100%;
+    height: 420px;
+    border-radius: 16px;
+    margin-top: 10px;
+  }
+
+  .list-item {
+    padding:12px;
+    border-radius:12px;
+    background:#f4fff4;
+    margin-bottom:10px;
+    border:1px solid #d4ecd4;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  .list-item strong { color:#2e8b57; }
+
+  @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+</style>
+
+</head>
+<body>
+
+<header class="topbar">
+  <h2><i class="fa-solid fa-truck"></i> Collector Dashboard</h2>
+</header>
+
+<main class="collector-grid">
+
+  <!-- CREATE SCHEDULE -->
+  <section class="card">
+    <h3>Create Pickup Schedule</h3>
+
+    <form id="createSchedule" class="form-inline">
+      <input type="date" id="sched_date" required>
+      <input type="time" id="sched_time" required>
+
+      <select id="sched_barangay">
+        <option>Brgy. Alto</option>
+        <option>Brgy. Baryo</option>
+        <option>Brgy. Centro</option>
+      </select>
+
+      <button type="submit" class="btn-primary">
+        <i class="fa-solid fa-plus"></i> Add
+      </button>
+    </form>
+  </section>
+
+  <!-- ACCEPTANCE REQUESTS -->
+  <section class="card">
+    <h3>ETA Requests</h3>
+    <ul id="acceptQueue"></ul>
+  </section>
+
+  <!-- LIVE LOCATION SHARING -->
+  <section class="card" style="grid-column: span 2;">
+    <h3><i class="fa-solid fa-map-location-dot"></i> Live Route & Location</h3>
+
+    <div id="map"></div>
+
+    <div style="display:flex; justify-content:space-between; margin-top:15px;">
+      <div>
+        <button id="start" class="btn-primary"><i class="fa-solid fa-location-crosshairs"></i> Start Sharing</button>
+        <button id="stop" class="btn-muted"><i class="fa-solid fa-stop"></i> Stop</button>
+      </div>
+      <button id="showRoute" class="btn-primary small">
+        <i class="fa-solid fa-route"></i> Show Route
+      </button>
+    </div>
+  </section>
+
+</main>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module" src="js/main.js"></script>
+
+<script>
+(async function initCollector(){
+
+  await window.GARBO.init();
+
+  /** --------------------------
+   *  MAP SETUP
+   * --------------------------*/
+  const map = L.map('map').setView([14.5995, 120.9842], 13);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
+
+  // TRUCK ICON FROM CDN
+  const truckIcon = L.icon({
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/743/743007.png",
+    iconSize: [42, 42]
+  });
+
+  let marker = null;
+  let watchId = null;
+
+  /** --------------------------
+   *  START SHARING LOCATION
+   * --------------------------*/
+  document.getElementById("start").addEventListener("click", () => {
+
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported.");
+      return;
+    }
+
+    watchId = navigator.geolocation.watchPosition(async pos => {
+
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      if (!marker) {
+        marker = L.marker([lat, lng], { icon: truckIcon }).addTo(map);
+      } else {
+        marker.setLatLng([lat, lng]);
+      }
+
+      map.setView([lat, lng], 15);
+
+      // Upload to Supabase
+      await window.GARBO.supabase.from("collectors_positions").upsert({
+        collector_id: "collector_demo",
+        lat,
+        lng
+      });
+
+    }, err => console.error(err), { enableHighAccuracy: true });
+    
+    alert("Sharing location...");
+
+  });
+
+  /** --------------------------
+   *  STOP SHARING LOCATION
+   * --------------------------*/
+  document.getElementById("stop").addEventListener("click", () => {
+    if (watchId) navigator.geolocation.clearWatch(watchId);
+    alert("Stopped sharing.");
+  });
+
+  /** --------------------------
+   *  CREATE SCHEDULE
+   * --------------------------*/
+  document.getElementById("createSchedule").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const date = document.getElementById("sched_date").value;
+    const time = document.getElementById("sched_time").value;
+    const barangay = document.getElementById("sched_barangay").value;
+
+    const { error } = await window.GARBO.supabase.from("schedules").insert({
+      date,
+      time,
+      barangay,
+      status: "scheduled"
+    });
+
+    if (error) alert("Failed to create schedule.");
+    else alert("Schedule created!");
+  });
+
+  /** --------------------------
+   *  LOAD ETA REQUESTS
+   * --------------------------*/
+  async function loadETARequests() {
+    const { data } = await window.GARBO.supabase.from("eta_requests").select("*");
+
+    const list = document.getElementById("acceptQueue");
+    list.innerHTML = "";
+
+    if (!data || data.length === 0) {
+      list.innerHTML = "<p class='muted'>No ETA requests yet.</p>";
+      return;
+    }
+
+    data.forEach(r => {
+      const li = document.createElement("li");
+      li.className = "list-item";
+
+      li.innerHTML = `
+        <div>
+          <strong>Schedule #${r.schedule_id}</strong>
+          <div class="muted">Requested by Resident</div>
+        </div>
+      `;
+
+      const btn = document.createElement("button");
+      btn.className = "btn-primary";
+      btn.textContent = "Send ETA";
+
+      btn.onclick = async () => {
+        await window.GARBO.supabase.from("eta_requests").delete().eq("id", r.id);
+        alert("ETA sent!");
+        loadETARequests();
+      };
+
+      li.appendChild(btn);
+      list.appendChild(li);
+    });
+  }
+
+  loadETARequests();
+
+  // realtime refresh for eta requests
+  window.GARBO.supabase.channel("eta_channel")
+    .on("postgres_changes",
+      { event: "*", schema: "public", table: "eta_requests" },
+      loadETARequests
+    )
+    .subscribe();
+
+})();
+</script>
+
+</body>
+</html>

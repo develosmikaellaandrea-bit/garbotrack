@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GarboTrack — Sign Up</title>
+
+  <link rel="stylesheet" href="css/garbotrack.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<header class="topbar">
+  <div><i class="fa-solid fa-user-plus"></i> Create Account</div>
+</header>
+
+<main class="centered-card">
+  
+  <h1 style="text-align:center; margin-bottom:16px;">Sign Up</h1>
+
+  <form id="signupForm" class="form-grid">
+
+    <label>Full Name
+      <input id="name" required />
+    </label>
+
+    <label>Email
+      <input id="email" type="email" required />
+    </label>
+
+    <label>Password
+      <input id="password" type="password" required minlength="6" />
+    </label>
+
+    <label>Role
+      <select id="role">
+        <option value="resident">Resident</option>
+        <option value="collector">Collector</option>
+      </select>
+    </label>
+
+    <label>Barangay
+      <select id="barangay">
+        <option>Brgy. Alas</option>
+        <option>Brgy. Cabitan</option>
+        <option>Brgy. Poblacion</option>
+      </select>
+    </label>
+
+    <div class="actions" style="margin-top:12px;">
+      <button class="btn primary" type="submit" style="width:100%;">
+        <i class="fa-solid fa-user-plus"></i> Create Account
+      </button>
+
+      <a class="btn ghost" href="index.html" style="margin-top:8px; width:100%; display:block; text-align:center;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Login
+      </a>
+    </div>
+
+  </form>
+</main>
+
+<!-- CORRECT WAY TO LOAD main.js -->
+<script src="js/main.js"></script>
+
+<script>
+(async () => {
+  await window.GARBO.init(); // now window.GARBO exists
+})();
+
+document.getElementById('signupForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+
+  const name     = document.getElementById('name').value.trim();
+  const email    = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const role     = document.getElementById('role').value;
+  const barangay = document.getElementById('barangay').value;
+
+  try {
+    const res = await window.GARBO.supabase.auth.signUp({ email, password });
+    if (res.error) throw res.error;
+
+    const userId = res.data.user.id;
+
+    await window.GARBO.supabase.from("profiles").insert([
+      { id: userId, full_name: name, role, barangay }
+    ]);
+
+    alert("Account created successfully.");
+    window.location.href = "index.html";
+
+  } catch (err) {
+    alert("Sign up failed: " + err.message);
+  }
+});
+</script>
+
+</body>
+</html>

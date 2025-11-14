@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Dashboard — GarboTrack</title>
+
+<link rel="stylesheet" href="css/garbotrack.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+  .admin-grid {
+    padding: 20px;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width:900px){
+    .admin-grid { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    animation: fadeIn 0.4s ease;
+  }
+
+  #map {
+    width: 100%;
+    height: 450px;
+    border-radius: 16px;
+    margin-top: 10px;
+  }
+
+  .list-item {
+    background:#f0fff4;
+    padding: 12px;
+    border-radius:12px;
+    margin-bottom:10px;
+    border:1px solid #d4ecd4;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  .status-indicator {
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    margin-right:7px;
+    display:inline-block;
+  }
+  .active { background:#2ecc71; }
+  .inactive { background:#e74c3c; }
+
+  @keyframes fadeIn {
+    from { opacity:0; transform:translateY(15px); }
+    to   { opacity:1; transform:none; }
+  }
+</style>
+
+</head>
+<body>
+
+<header class="topbar">
+  <h2><i class="fa-solid fa-user-gear"></i> Admin Dashboard</h2>
+</header>
+
+<main class="admin-grid">
+
+  <!-- MAP OF COLLECTORS -->
+  <section class="card" style="grid-column: span 2;">
+    <h3><i class="fa-solid fa-map-location-dot"></i> Collector Locations</h3>
+    <div id="map"></div>
+  </section>
+
+  <!-- COLLECTORS LIST -->
+  <section class="card">
+    <h3><i class="fa-solid fa-truck"></i> Collectors</h3>
+    <ul id="collectorsList"></ul>
+  </section>
+
+  <!-- SCHEDULES OVERVIEW -->
+  <section class="card">
+    <h3><i class="fa-solid fa-calendar-days"></i> Schedules</h3>
+    <ul id="scheduleList"></ul>
+  </section>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module" src="js/main.js"></script>
+
+<script>
+(async function initAdmin() {
+
+  await window.GARBO.init();
+
+  /** --------------------------
+   *  MAP INITIAL SETUP
+   * --------------------------*/
+  const map = L.map('map').setView([14.5995, 120.9842], 12);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19
+  }).addTo(map);
+
+  const truckIcon = L.icon({
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/743/743007.png",
+    iconSize: [42, 42]
+  });
+
+  const markers = {}; // store markers per collector ID
+
+
+  /** --------------------------
+   *  LOAD COLLECTOR POSITIONS
+   * --------------------------*/
+  async function loadCollectorPositions() {
+    const { data } = await window.GARBO.supabase
+      .from("collectors_positions")
+      .select("*");
+
+    if (!data) return;
+
+    data.forEach(p => {
+      if (!markers[p.collector_id]) {
+        markers[p.collector_id] = L.marker([p.lat, p.lng], { icon: truckIcon })
+          .addTo(map)
+          .bindPopup(`Collector: ${p.collector_id}`);
+      } else {
+        markers[p.collector_id].setLatLng([p.lat, p.lng]);
+      }
+    });
+  }
+
+  loadCollectorPositions();
+
+
+  /** --------------------------
+   *  REALTIME LOCATION UPDATES
+   * --------------------------*/
+  window.GARBO.supabase.channel("admin_collectors")
+    .on("postgres_changes",
+      { event: "UPDATE", schema: "public", table: "collectors_positions" },
+      payload => {
+        const p = payload.new;
+        if (!markers[p.collector_id]) {
+          markers[p.collector_id] = L.marker([p.lat, p.lng], { icon: truckIcon })
+            .addTo(map);
+        } else {
+          markers[p.collector_id].setLatLng([p.lat, p.lng]);
+        }
+      }
+    )
+    .subscribe();
+
+
+  /** --------------------------
+   *  LOAD COLLECTORS LIST
+   * --------------------------*/
+  async function loadCollectors() {
+    const { data } = await window.GARBO.supabase
+      .from("profiles")
+      .select("*")
+      .eq("role", "collector");
+
+    const list = document.getElementById("collectorsList");
+    list.innerHTML = "";
+
+    if (!data || data.length === 0) {
+      list.innerHTML = "<p class='muted'>No collectors found.</p>";
+      return;
+    }
+
+    data.forEach(c => {
+      const li = document.createElement("li");
+      li.className = "list-item";
+
+      li.innerHTML = `
+        <div>
+          <strong>${c.full_name}</strong>
+          <div class="muted">${c.barangay}</div>
+        </div>
+        <div>
+          <span class="status-indicator active"></span>
+        </div>
+      `;
+
+      list.appendChild(li);
+    });
+  }
+
+  loadCollectors();
+
+
+  /** --------------------------
+   *  LOAD SCHEDULES
+   * --------------------------*/
+  async function loadSchedules() {
+    const { data } = await window.GARBO.supabase
+      .from("schedules")
+      .select("*")
+      .order("date", { ascending: true });
+
+    const list = document.getElementById("scheduleList");
+    list.innerHTML = "";
+
+    if (!data || data.length === 0) {
+      list.innerHTML = "<p class='muted'>No schedules found.</p>";
+      return;
+    }
+
+    data.forEach(s => {
+      const li = document.createElement("li");
+      li.className = "list-item";
+
+      li.innerHTML = `
+        <div>
+          <strong>${s.barangay}</strong>
+          <div class="muted">${s.date} — ${s.time}</div>
+        </div>
+
+        <span class="muted">${s.status}</span>
+      `;
+
+      list.appendChild(li);
+    });
+  }
+
+  loadSchedules();
+
+
+})();
+</script>
+
+</body>
+</html>
