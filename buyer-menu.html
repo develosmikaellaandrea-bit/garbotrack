@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu — BlueBite</title>
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        .menu-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .menu-header h2 {
+            font-size: 28px;
+            color: #1657d6;
+        }
+        
+        #menuList {
+            margin-top: 20px;
+        }
+        
+        /* Toast UI */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1657d6;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            opacity: 0;
+            transition: 0.3s ease;
+            pointer-events: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h1>BlueBite</h1>
+        <div>
+            <a href="buyer-dashboard.html">Dashboard</a>
+            <a href="buyer-stores.html">Stores</a>
+            <a href="buyer-cart.html">Cart</a>
+            <a href="buyer-orders.html">Orders</a>
+            <a href="buyer-completed.html">Completed</a>
+            <a href="#" onclick="Auth.logout()">Logout</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        
+        <!-- HEADER -->
+        <div class="menu-header">
+            <h2 id="storeName">Menu 🍽️</h2>
+            <p class="subtext">Browse and order your favorite meals</p>
+        </div>
+        
+        <!-- PRODUCT GRID -->
+        <div id="menuList" class="grid">
+            <!-- Items loaded from JS -->
+        </div>
+        
+    </div>
+    
+    <!-- TOAST -->
+    <div id="toast">Added to cart!</div>
+    
+    <!-- JS -->
+    <script type="module">
+        import * as Buyer from "./js/buyer.js";
+        import * as Auth from "./js/auth.js";
+        import * as Cart from "./js/cart.js";
+        
+        // Load menu from buyer.js
+        Buyer.loadStoreMenu();
+        
+        // Expose global for logout & toast
+        window.Auth = Auth;
+        
+        // Toast Function
+        window.showToast = function(msg = "Done!", color = "#1657d6") {
+            const t = document.getElementById("toast");
+            if (!t) return;
+            
+            t.textContent = msg;
+            t.style.background = color;
+            t.style.opacity = "1";
+            t.style.transform = "translateX(-50%) translateY(0px)";
+            
+            setTimeout(() => {
+                t.style.opacity = "0";
+                t.style.transform = "translateX(-50%) translateY(20px)";
+            }, 1500);
+        };
+        
+        // Override Cart.addToCart to show toast
+        Cart.addToCart = async function(productId) {
+            const { user } = await Auth.requireAuth("buyer", "buyer-login.html");
+            
+            const { error } = await supabase
+                .from("cart")
+                .insert([{ user_id: user.id, product_id: productId, qty: 1 }]);
+            
+            if (error) {
+                console.error(error);
+                window.showToast("Failed to add ❌", "#dc2626");
+                return;
+            }
+            
+            window.showToast("Added to cart ✔️", "#22c55e");
+        };
+        
+        window.Cart = Cart;
+    </script>
+    
+</body>
+
+</html>

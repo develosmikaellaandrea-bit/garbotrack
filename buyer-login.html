@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Login — BlueBite</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .login-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 90vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 35px 30px;
+            border-radius: 18px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .login-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            color: #2767ff;
+        }
+
+        .login-card h2 {
+            margin-bottom: 5px;
+            color: #1657d6;
+        }
+
+        .login-card p {
+            color: #6f6f6f;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .login-card button {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .back-link {
+            margin-top: 12px;
+            display: inline-block;
+            color: #1657d6;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            color: #0b3aad;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h1>BlueBite</h1>
+        <div>
+            <a href="index.html">Home</a>
+        </div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="login-wrapper">
+
+        <div class="login-card">
+            <div class="login-icon">🍽️</div>
+
+            <h2>Buyer Login</h2>
+            <p>Access your account to order your favorite meals.</p>
+
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+
+            <button onclick="Auth.loginBuyer(email.value, password.value)">
+                Login
+            </button>
+
+            <a class="back-link" href="buyer-register.html">Create Buyer Account</a>
+        </div>
+
+    </div>
+
+    <!-- ============================
+         TOAST ALERT CONTAINER
+    ============================ -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ============================
+         TOAST ALERT FUNCTION
+    ============================ -->
+    <script>
+        window.showToast = function(message, color = "#3d7bfa") {
+            const toast = document.getElementById("toast");
+            if (!toast) return alert(message); // fallback
+
+            toast.textContent = message;
+            toast.style.background = color;
+            toast.classList.add("show");
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2600);
+        };
+    </script>
+
+    <!-- MAIN JS -->
+    <script type="module" src="js/app.js"></script>
+
+</body>
+</html>

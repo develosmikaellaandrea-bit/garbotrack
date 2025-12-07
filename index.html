@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlueBite — Ordering System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* EXTRA HERO DESIGN FOR INDEX PAGE ONLY */
+
+        .hero {
+            width: 100%;
+            padding: 120px 20px 100px;
+            background: linear-gradient(135deg, #2767ff, #4a8dff, #9bc4ff);
+            color: white;
+            text-align: center;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .role-container {
+            width: 90%;
+            max-width: 900px;
+            margin: -60px auto 40px;
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .role-card {
+            background: white;
+            width: 260px;
+            padding: 30px 20px;
+            border-radius: 18px;
+            box-shadow: 0px 6px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: 0.25s;
+        }
+
+        .role-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0px 10px 20px rgba(0,0,0,0.12);
+        }
+
+        .role-icon {
+            font-size: 45px;
+            margin-bottom: 10px;
+            color: #2767ff;
+        }
+
+        .role-card h3 {
+            margin-bottom: 10px;
+            font-size: 20px;
+            color: #1e1e1e;
+        }
+
+        .role-card p {
+            font-size: 14px;
+            color: #6b6b6b;
+            margin-bottom: 18px;
+        }
+
+        .role-card button {
+            width: 100%;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- HERO HEADER -->
+    <div class="hero">
+        <h1>Welcome to BlueBite</h1>
+        <p>Your all-in-one ordering system — fast, clean, and delicious.</p>
+    </div>
+
+    <!-- ROLE SELECTION -->
+    <div class="role-container">
+
+        <!-- BUYER -->
+        <div class="role-card">
+            <div class="role-icon">🍔</div>
+            <h3>Buyer</h3>
+            <p>Order your favorite meals & track your orders in real-time.</p>
+
+            <button onclick="window.location.href='buyer-login.html'">
+                Buyer Login
+            </button>
+
+            <button style="margin-top:10px; background:#4a8dff;"
+                onclick="window.location.href='buyer-register.html'">
+                Buyer Register
+            </button>
+        </div>
+
+        <!-- SELLER -->
+        <div class="role-card">
+            <div class="role-icon">🏪</div>
+            <h3>Seller</h3>
+            <p>Manage products, orders, and track your sales easily.</p>
+
+            <button onclick="window.location.href='seller-login.html'">
+                Seller Login
+            </button>
+
+            <button style="margin-top:10px; background:#4a8dff;"
+                onclick="window.location.href='seller-register.html'">
+                Seller Register
+            </button>
+        </div>
+
+    </div>
+<div id="toast" class="toast"></div>
+    <script type="module" src="js/app.js"></script>
+    
+</body>
+</html>

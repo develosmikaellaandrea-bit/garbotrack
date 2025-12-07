@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Dashboard — BlueBite</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .dash-wrapper {
+            padding: 20px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, #1657d6, #3b82f6);
+            color: #fff;
+            padding: 22px 20px;
+            border-radius: 18px;
+            box-shadow: 0 10px 20px rgba(22, 87, 214, .35);
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .hero-sub {
+            font-size: 14px;
+            opacity: .9;
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .quick-card {
+            background: white;
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .quick-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .quick-sub {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .quick-footer {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 26px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #e5edff;
+            color: #1657d6;
+        }
+
+        .quick-btn {
+            font-size: 12px;
+            border-radius: 999px;
+            padding: 6px 10px;
+        }
+
+        .quick-icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .section-title {
+            margin-top: 10px;
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .recent-card {
+            background: white;
+            border-radius: 14px;
+            padding: 12px 14px;
+            box-shadow: var(--shadow);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .recent-status {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .status-placed     { background: #3b82f6; }
+        .status-preparing  { background: #f59e0b; }
+        .status-ready      { background: #10b981; }
+        .status-delivery   { background: #6366f1; }
+        .status-completed  { background: #16a34a; }
+        .status-cancelled  { background: #ef4444; }
+
+        .recent-meta {
+            font-size: 12px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR (NO MORE MENU) -->
+    <div class="navbar">
+        <h1>BlueBite</h1>
+        <div>
+            <a href="buyer-dashboard.html">Dashboard</a>
+            <a href="buyer-stores.html">Stores</a>
+            <a href="buyer-cart.html">Cart</a>
+            <a href="buyer-orders.html">Orders</a>
+            <a href="buyer-completed.html">Completed</a>
+            <a href="#" onclick="Auth.logout()">Logout</a>
+        </div>
+    </div>
+
+    <!-- CONTENT WRAPPER -->
+    <div class="dash-wrapper">
+
+        <!-- HERO -->
+        <div class="hero-card">
+            <div class="hero-title">
+                Hi, <span id="buyerName">Buyer</span> 👋
+            </div>
+            <div class="hero-sub">
+                What would you like to get today?
+            </div>
+        </div>
+
+        <!-- QUICK MENU CARDS -->
+        <div class="quick-grid">
+
+            <div class="quick-card">
+                <div>
+                    <div class="quick-icon">🏪</div>
+                    <div class="quick-label">Browse Stores</div>
+                    <div class="quick-sub">See all available stores.</div>
+                </div>
+                <div class="quick-footer">
+                    <span class="badge" id="storeCountBadge">—</span>
+                    <button class="quick-btn" onclick="location.href='buyer-stores.html'">Open</button>
+                </div>
+            </div>
+
+            <div class="quick-card">
+                <div>
+                    <div class="quick-icon">🛒</div>
+                    <div class="quick-label">My Cart</div>
+                    <div class="quick-sub">Items waiting to checkout.</div>
+                </div>
+                <div class="quick-footer">
+                    <span class="badge" id="cartCountBadge">0</span>
+                    <button class="quick-btn" onclick="location.href='buyer-cart.html'">View</button>
+                </div>
+            </div>
+
+            <div class="quick-card">
+                <div>
+                    <div class="quick-icon">📦</div>
+                    <div class="quick-label">Active Orders</div>
+                    <div class="quick-sub">Track ongoing deliveries.</div>
+                </div>
+                <div class="quick-footer">
+                    <span class="badge" id="pendingCountBadge">0</span>
+                    <button class="quick-btn" onclick="location.href='buyer-orders.html'">Track</button>
+                </div>
+            </div>
+
+            <div class="quick-card">
+                <div>
+                    <div class="quick-icon">✅</div>
+                    <div class="quick-label">Completed</div>
+                    <div class="quick-sub">View past orders.</div>
+                </div>
+                <div class="quick-footer">
+                    <span class="badge" id="completedCountBadge">0</span>
+                    <button class="quick-btn" onclick="location.href='buyer-completed.html'">View</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RECENT ORDERS -->
+        <h3 class="section-title">Recent Orders</h3>
+        <div id="recentOrders">
+            <p class="subtext">Loading recent orders...</p>
+        </div>
+
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script>
+        window.showToast = function (msg, color = "#2767ff") {
+            const t = document.getElementById("toast");
+            t.textContent = msg;
+            t.style.background = color;
+            t.classList.add("show");
+            setTimeout(() => t.classList.remove("show"), 2000);
+        };
+    </script>
+
+    <script type="module">
+        import * as Buyer from "./js/buyer.js";
+        import * as Auth from "./js/auth.js";
+
+        window.Auth = Auth;
+
+        Buyer.initBuyerDashboard();
+    </script>
+
+</body>
+</html>

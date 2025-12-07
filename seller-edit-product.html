@@ -1,0 +1,66 @@
+export async function loadOrders() {
+    const { user } = await requireAuth("seller", "seller-login.html");
+
+    // Get the seller's store
+    const { data: store } = await supabase
+        .from("stores")
+        .select("id")
+        .eq("seller_id", user.id)
+        .single();
+
+    const container = document.getElementById("sellerOrderList");
+    const empty = document.getElementById("emptyMessage");
+
+    if (!store) {
+        container.innerHTML = "<p>Create your store first.</p>";
+        return;
+    }
+
+    // Fetch orders
+    const { data: orders } = await supabase
+        .from("orders")
+        .select("*, order_items(*), profiles(full_name)")
+        .eq("store_id", store.id)
+        .order("created_at", { ascending: false });
+
+    if (!orders.length) {
+        empty.style.display = "block";
+        return;
+    }
+
+    container.innerHTML = "";
+
+    orders.forEach(o => {
+        const items = o.order_items
+            .map(i => `${i.product_name} x${i.quantity}`)
+            .join("<br>");
+
+        container.innerHTML += `
+            <div class="seller-order-card">
+                <h3>Order #${o.id}</h3>
+                <p><strong>Buyer:</strong> ${o.profiles.full_name}</p>
+                <p><strong>Total:</strong> ₱${o.total_amount}</p>
+                <p><strong>Date:</strong> ${new Date(o.created_at).toLocaleString()}</p>
+
+                <div class="order-items">
+                    ${items}
+                </div>
+
+                <label><strong>Status:</strong></label>
+                <select id="status-${o.id}">
+                    <option ${o.status === 'placed' ? 'selected':''} value="placed">Placed</option>
+                    <option ${o.status === 'preparing' ? 'selected':''} value="preparing">Preparing</option>
+                    <option ${o.status === 'ready' ? 'selected':''} value="ready">Ready for Delivery</option>
+                    <option ${o.status === 'on_the_way' ? 'selected':''} value="on_the_way">On the way</option>
+                    <option ${o.status === 'delivered' ? 'selected':''} value="delivered">Delivered</option>
+                    <option ${o.status === 'completed' ? 'selected':''} value="completed">Completed</option>
+                </select>
+
+                <button class="save-btn"
+                    onclick="Seller.updateStatus(${o.id})">
+                    Save Status
+                </button>
+            </div>
+        `;
+    });
+}

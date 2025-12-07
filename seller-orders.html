@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Orders — BlueBite</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .orders-wrapper {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .order-card {
+            background: #fff;
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 18px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .status-label {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            text-transform: capitalize;
+        }
+
+        .status-placed     { background:#3b82f6; }
+        .status-preparing  { background:#f59e0b; }
+        .status-ready      { background:#10b981; }
+        .status-delivery   { background:#6366f1; }
+        .status-delivered  { background:#16a34a; }
+        .status-completed  { background:#6b7280; }
+        .status-cancelled  { background:#dc2626; }
+
+        /* TIMELINE */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            gap: 4px;
+        }
+
+        .timeline-step {
+            flex: 1;
+            text-align: center;
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .timeline-step .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            border: 2px solid #d1d5db;
+            margin: 0 auto 4px;
+            background: #fff;
+        }
+
+        .timeline-step.active {
+            color: #1657d6;
+        }
+
+        .timeline-step.active .dot {
+            border-color: #1657d6;
+            background: #1657d6;
+        }
+
+        /* ITEMS LIST */
+        .items-title {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .order-items-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 6px;
+            font-size: 14px;
+        }
+
+        .order-items-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px dashed #e5e7eb;
+        }
+
+        .order-items-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* BUTTONS */
+        .status-btns {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .status-btns button {
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-preparing { background:#f59e0b; color:white; }
+        .btn-ready     { background:#10b981; color:white; }
+        .btn-delivery  { background:#6366f1; color:white; }
+        .btn-delivered { background:#16a34a; color:white; }
+        .btn-completed { background:#6b7280; color:white; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h1>BlueBite</h1>
+        <div>
+            <a href="seller-dashboard.html">Dashboard</a>
+            <a href="seller-add-product.html">Add Product</a>
+            <a href="seller-orders.html">Orders</a>
+            <a href="#" onclick="Auth.logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="orders-wrapper">
+        <h2>Orders 📦</h2>
+        <p class="subtext">Manage all store orders and update their status</p>
+
+        <div id="sellerOrdersList">Loading orders...</div>
+    </div>
+
+    <script type="module">
+        import * as Orders from "./js/orders.js";
+        import * as Auth from "./js/auth.js";
+
+        window.Auth = Auth;
+        window.Orders = Orders;
+
+        Orders.loadSellerOrders();
+
+        // OPTIONAL AUTO REFRESH
+        // setInterval(() => Orders.loadSellerOrders(true), 8000);
+    </script>
+
+</body>
+</html>

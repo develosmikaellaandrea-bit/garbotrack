@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completed Orders — BlueBite</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .completed-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .completed-header h2 {
+            font-size: 28px;
+            color: #1657d6;
+        }
+
+        .completed-card {
+            background: white;
+            padding: 20px;
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .completed-card h3 {
+            margin-bottom: 6px;
+            color: var(--blue-dark);
+        }
+
+        .completed-card p {
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        .completed-total {
+            font-weight: 700;
+            color: #1657d6;
+        }
+
+        .none {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 16px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h1>BlueBite</h1>
+        <div>
+            <a href="buyer-dashboard.html">Dashboard</a>
+            <a href="buyer-menu.html">Menu</a>
+            <a href="buyer-cart.html">Cart</a>
+            <a href="buyer-orders.html">Orders</a>
+            <a href="buyer-completed.html">Completed</a>
+            <a href="#" onclick="Auth.logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="completed-header">
+            <h2>Completed Orders 🧾</h2>
+            <p class="subtext">Here are your past completed orders</p>
+        </div>
+
+        <!-- COMPLETED ORDERS LIST -->
+        <div id="completedList">
+            <!-- Loaded via JS -->
+        </div>
+
+    </div>
+
+    <script type="module">
+        import * as Buyer from "./js/buyer.js";
+        import * as Auth from "./js/auth.js";
+
+        Buyer.loadCompleted();
+        window.Auth = Auth;
+    </script>
+
+</body>
+</html>

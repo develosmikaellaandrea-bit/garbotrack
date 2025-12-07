@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seller Dashboard — BlueBite</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+
+    <style>
+        .dash-wrapper {
+            max-width: 1050px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        /* HERO */
+        .hero-card {
+            background: linear-gradient(135deg, #1657d6, #3b82f6);
+            color: #fff;
+            padding: 26px 24px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        .hero-title {
+            font-size: 25px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        .hero-sub {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        /* OVERVIEW — 2 per row */
+        .overview-grid {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        @media (max-width: 600px) {
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .overview-card {
+            background: white;
+            padding: 22px;
+            border-radius: 18px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: 0.2s ease;
+        }
+        .overview-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 9px 20px rgba(0,0,0,0.1);
+        }
+        .overview-card h3 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #1657d6;
+        }
+        .overview-card p {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* QUICK ACTION GRID */
+        .quick-grid {
+            margin-top: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 15px;
+        }
+        .quick-card {
+            background: #fff;
+            padding: 18px;
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .quick-icon {
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+        .quick-label {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .quick-sub {
+            font-size: 12px;
+            margin-top: 4px;
+            color: #6b7280;
+        }
+        .quick-footer {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .quick-btn {
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+
+        /* STORE SETTINGS */
+        .store-settings-card {
+            background:white;
+            padding:22px;
+            border-radius:18px;
+            margin-top:25px;
+            margin-bottom:25px;
+            box-shadow:0 6px 14px rgba(0,0,0,0.08);
+        }
+        .store-settings-card label {
+            font-size:14px;
+            font-weight:600;
+            color:#111827;
+        }
+        .store-settings-card input,
+        .store-settings-card textarea {
+            width:100%;
+            padding:10px;
+            border-radius:12px;
+            border:1px solid #d1d5db;
+            margin-top:6px;
+            margin-bottom:14px;
+            font-size:14px;
+        }
+
+        /* RECENT ORDERS */
+        .recent-card {
+            background: white;
+            padding: 14px;
+            border-radius: 14px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow);
+        }
+        .recent-status {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+        .status-placed { background: #3b82f6; }
+        .status-preparing { background: #f59e0b; }
+        .status-ready { background: #10b981; }
+        .status-delivery { background: #6366f1; }
+        .status-delivered { background: #16a34a; }
+        .status-completed { background: #6b7280; }
+        .status-cancelled { background: #dc2626; }
+
+        /* POPUP MODAL */
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            backdrop-filter: blur(3px);
+            background: rgba(0,0,0,0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 900;
+        }
+        .modal {
+            background: white;
+            width: 90%;
+            max-width: 420px;
+            padding: 20px;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .modal input, .modal textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            margin-top: 8px;
+            font-size:14px;
+        }
+        .modal button { margin-top: 14px; width: 100%; }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2767ff;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            z-index: 9999;
+            font-size: 13px;
+        }
+        .toast.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h1>BlueBite</h1>
+        <div>
+            <a href="seller-dashboard.html">Dashboard</a>
+            <a href="seller-add-product.html">Add Product</a>
+            <a href="seller-orders.html">Orders</a>
+            <a href="#" onclick="Auth.logout()">Logout</a>
+        </div>
+    </div>
+
+    <!-- CREATE STORE POPUP -->
+    <div id="storeModal" class="modal-bg">
+        <div class="modal">
+            <h2 id="storeModalTitle">Create Store 🏪</h2>
+            <p id="storeModalText">You must create your store before continuing.</p>
+
+            <input id="storeName" placeholder="Store Name" />
+            <textarea id="storeDesc" placeholder="Store Description"></textarea>
+
+            <button id="saveStoreBtn">Save Store</button>
+        </div>
+    </div>
+
+    <div class="dash-wrapper">
+
+        <!-- HERO -->
+        <div class="hero-card">
+            <div class="hero-title">Welcome, <span id="storeTitle">Your Store</span> 👋</div>
+            <div class="hero-sub">Manage your business performance efficiently.</div>
+        </div>
+
+        <!-- OVERVIEW (2 per row) -->
+        <div class="overview-grid">
+            <div class="overview-card">
+                <h3 id="overviewOrdersToday">0</h3>
+                <p>Orders Today</p>
+            </div>
+            <div class="overview-card">
+                <h3 id="overviewPending">0</h3>
+                <p>Pending Orders</p>
+            </div>
+            <div class="overview-card">
+                <h3 id="overviewCompleted">0</h3>
+                <p>Completed Today</p>
+            </div>
+            <div class="overview-card">
+                <h3 id="overviewSales">₱0</h3>
+                <p>Sales Today</p>
+            </div>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <h3 class="section-title" style="margin-top:25px;">Quick Actions ⚡</h3>
+        <div class="quick-grid">
+            <div class="quick-card">
+                <div class="quick-icon">🍔</div>
+                <div class="quick-label">Add Product</div>
+                <div class="quick-sub">Create a new menu item.</div>
+                <div class="quick-footer">
+                    <button class="quick-btn" onclick="location.href='seller-add-product.html'">Go</button>
+                </div>
+            </div>
+
+            <div class="quick-card">
+                <div class="quick-icon">📦</div>
+                <div class="quick-label">Orders</div>
+                <div class="quick-sub">View incoming orders.</div>
+                <div class="quick-footer">
+                    <button class="quick-btn" onclick="location.href='seller-orders.html'">Open</button>
+                </div>
+            </div>
+
+            <div class="quick-card">
+                <div class="quick-icon">📋</div>
+                <div class="quick-label">Manage Products</div>
+                <div class="quick-sub">Edit or remove items.</div>
+                <div class="quick-footer">
+                    <button class="quick-btn" onclick="location.href='seller-products.html'">View</button>
+                </div>
+            </div>
+
+            <div class="quick-card">
+                <div class="quick-icon">📊</div>
+                <div class="quick-label">Sales Overview</div>
+                <div class="quick-sub">Today’s performance summary.</div>
+                <div class="quick-footer">
+                    <button class="quick-btn" onclick="window.scrollTo(0,0)">Top</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STORE SETTINGS -->
+        <h3 class="section-title">Store Settings 🏪</h3>
+        <div class="store-settings-card">
+            <label for="editStoreName">Store Name</label>
+            <input id="editStoreName" placeholder="Store Name">
+
+            <label for="editStoreDesc">Store Description</label>
+            <textarea id="editStoreDesc" placeholder="Store Description"></textarea>
+
+            <button onclick="saveStoreSettings()">Save Store Info</button>
+        </div>
+
+        <!-- RECENT ORDERS -->
+        <h3 class="section-title">Recent Orders</h3>
+        <div id="sellerRecentOrders">Loading...</div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast"></div>
+
+    <!-- JAVASCRIPT -->
+    <script type="module">
+        import { supabase } from "./js/supabase.js";
+        import { requireAuth } from "./js/auth.js";
+        import { getSellerStore } from "./js/seller.js";
+        import * as Auth from "./js/auth.js";
+        window.Auth = Auth;
+
+        let currentStore = null;
+
+        function showToast(msg, color = "#2767ff") {
+            const t = document.getElementById("toast");
+            t.textContent = msg;
+            t.style.background = color;
+            t.classList.add("show");
+            setTimeout(() => t.classList.remove("show"), 1500);
+        }
+        window.showToast = showToast;
+
+        async function init() {
+            await requireAuth("seller", "seller-login.html");
+
+            currentStore = await getSellerStore();
+
+            if (!currentStore) {
+                const modal = document.getElementById("storeModal");
+                const saveBtn = document.getElementById("saveStoreBtn");
+                modal.style.display = "flex";
+                saveBtn.onclick = createStore;
+                return;
+            }
+
+            // Set hero title
+            document.getElementById("storeTitle").textContent = currentStore.name;
+
+            // Load settings + data
+            loadStoreSettings();
+            loadOverview();
+            loadRecentOrders();
+        }
+
+        function loadStoreSettings() {
+            const nameInput = document.getElementById("editStoreName");
+            const descInput = document.getElementById("editStoreDesc");
+            if (!nameInput || !descInput || !currentStore) return;
+
+            nameInput.value = currentStore.name || "";
+            descInput.value = currentStore.description || "";
+        }
+
+        async function createStore() {
+            const nameInput = document.getElementById("storeName");
+            const descInput = document.getElementById("storeDesc");
+
+            const name = nameInput.value.trim();
+            const desc = descInput.value.trim();
+
+            if (!name) {
+                showToast("Store name required!", "#ef4444");
+                return;
+            }
+
+            const { data: session } = await supabase.auth.getSession();
+            const sellerId = session?.session?.user?.id;
+
+            const { error } = await supabase
+                .from("stores")
+                .insert([{ seller_id: sellerId, name, description: desc }]);
+
+            if (error) {
+                console.error(error);
+                showToast("Failed to create store", "#ef4444");
+                return;
+            }
+
+            showToast("Store created!", "#22c55e");
+            setTimeout(() => location.reload(), 800);
+        }
+
+        async function saveStoreSettings() {
+            const nameInput = document.getElementById("editStoreName");
+            const descInput = document.getElementById("editStoreDesc");
+
+            const name = nameInput.value.trim();
+            const desc = descInput.value.trim();
+
+            if (!name) {
+                showToast("Store name required!", "#ef4444");
+                return;
+            }
+
+            const { error } = await supabase
+                .from("stores")
+                .update({ name, description: desc })
+                .eq("id", currentStore.id);
+
+            if (error) {
+                console.error(error);
+                showToast("Failed to update store", "#ef4444");
+                return;
+            }
+
+            currentStore.name = name;
+            currentStore.description = desc;
+
+            document.getElementById("storeTitle").textContent = name;
+            showToast("Store updated!", "#22c55e");
+        }
+        window.saveStoreSettings = saveStoreSettings;
+
+        async function loadOverview() {
+            const start = new Date();
+            start.setHours(0, 0, 0, 0);
+
+            const { data: orders } = await supabase
+                .from("orders")
+                .select("*")
+                .eq("store_id", currentStore.id)
+                .gte("created_at", start.toISOString());
+
+            const pendingStatuses = ["placed", "preparing", "ready"];
+
+            const ordersToday = orders?.length || 0;
+            const pending = orders?.filter(o => pendingStatuses.includes(o.status)).length || 0;
+            const completed = orders?.filter(o => o.status === "completed").length || 0;
+            const sales = orders
+                ?.filter(o => o.status === "completed")
+                .reduce((sum, o) => sum + Number(o.total_amount), 0) || 0;
+
+            document.getElementById("overviewOrdersToday").textContent = ordersToday;
+            document.getElementById("overviewPending").textContent = pending;
+            document.getElementById("overviewCompleted").textContent = completed;
+            document.getElementById("overviewSales").textContent = "₱" + sales.toLocaleString();
+        }
+
+        async function loadRecentOrders() {
+            const box = document.getElementById("sellerRecentOrders");
+
+            const { data: orders } = await supabase
+                .from("orders")
+                .select("*")
+                .eq("store_id", currentStore.id)
+                .order("created_at", { ascending: false })
+                .limit(5);
+
+            if (!orders || !orders.length) {
+                box.innerHTML = "<p>No recent orders.</p>";
+                return;
+            }
+
+            const statusLabels = {
+                placed: "Placed",
+                preparing: "Preparing",
+                ready: "Ready",
+                delivery: "Delivery",
+                delivered: "Delivered",
+                completed: "Completed",
+                cancelled: "Cancelled"
+            };
+
+            box.innerHTML = "";
+            orders.forEach(o => {
+                box.innerHTML += `
+                    <div class="recent-card">
+                        <div style="display:flex; justify-content:space-between;">
+                            <b>Order #${o.id}</b>
+                            <span class="recent-status status-${o.status}">
+                                ${statusLabels[o.status]}
+                            </span>
+                        </div>
+                        <div style="font-size:13px; margin-top:4px;">
+                            <b>${o.customer_name}</b><br>
+                            ₱${Number(o.total_amount).toLocaleString()}
+                        </div>
+                        <button
+                            onclick="location.href='seller-orders.html#${o.id}'"
+                            style="margin-top:8px; width:100%; padding:6px; border-radius:8px; font-size:13px;">
+                            View Order
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>

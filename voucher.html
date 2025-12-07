@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shopee Vouchers</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+  <style>
+    body { background:#f5f5f5; font-family:Arial, sans-serif; }
+
+    .navbar-shopee { background:linear-gradient(90deg,#ff5f00,#ff7b26); }
+    .navbar-brand { color:white !important; font-weight:700; }
+
+    .summary-card {
+      background:white;
+      border-radius:12px;
+      padding:16px 20px;
+      margin-top:16px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.05);
+    }
+    .summary-value {
+      font-size:20px;
+      font-weight:700;
+      color:#ff5f00;
+    }
+
+    .voucher-card {
+      background:white;
+      padding:16px;
+      margin-top:14px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      border-left:4px solid #ff5f00;
+      position:relative;
+      box-shadow:0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .voucher-value { font-size:24px; font-weight:800; color:#ff5f00; }
+    .voucher-body { flex:1; padding:0 14px; }
+
+    .btn-redeem {
+      background:#ff5f00;
+      color:white;
+      padding:6px 14px;
+      border:none;
+      border-radius:999px;
+      font-weight:700;
+    }
+    .btn-redeemed {
+      background:#ccc !important;
+      color:#666 !important;
+      cursor:default;
+    }
+
+    .tag-redeemed {
+      display:none;
+      position:absolute;
+      right:12px;
+      top:8px;
+      background:#aaa;
+      color:white;
+      padding:3px 10px;
+      font-size:11px;
+      border-radius:999px;
+      font-weight:700;
+    }
+    .tag-redeemed.show { display:inline-block; }
+
+    /* CENTER ALERT */
+    .center-alert {
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      background:#ff5f00;
+      padding:25px 30px;
+      width:80%;
+      max-width:380px;
+      border-radius:14px;
+      text-align:center;
+      color:white;
+      font-weight:800;
+      font-size:22px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.3);
+      display:none;
+      z-index:2000;
+    }
+    .close-alert-btn {
+      position:absolute;
+      right:14px;
+      top:10px;
+      font-size:24px;
+      cursor:pointer;
+      font-weight:900;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ALERT -->
+<div id="centerAlert" class="center-alert">
+  <div class="close-alert-btn" onclick="closeAlert()">×</div>
+  <div id="alertText"></div>
+</div>
+
+<nav class="navbar navbar-shopee">
+  <div class="container">
+    <a class="navbar-brand" href="#">Shopee Vouchers</a>
+  </div>
+</nav>
+
+<div class="container" style="max-width:720px;">
+
+  <div class="summary-card">
+    <div class="fw-bold">Available Vouchers</div>
+    <div class="summary-value">₱2,858.45 each (9 vouchers)</div>
+    <small class="text-muted">Redeem only once every 72 hours</small>
+  </div>
+
+  <!-- 9 VOUCHERS (fixed HTML) -->
+  <div id="vouchersList">
+    <!-- id 1 -->
+    <div class="voucher-card" data-id="1">
+      <div><div class="voucher-value">₱2,858.45</div></div>
+      <div class="voucher-body">
+        <div class="fw-bold">Voucher</div>
+        <div class="text-muted" style="font-size:12px;">Valid for SLOAN only</div>
+      </div>
+      <button class="btn btn-redeem" onclick="redeemVoucher(1, this)">Redeem</button>
+      <span class="tag-redeemed">Redeemed</span>
+    </div>
+
+    <!-- id 2 -->
+    <div class="voucher-card" data-id="2">
+      <div><div class="voucher-value">₱2,858.45</div></div>
+      <div class="voucher-body">
+        <div class="fw-bold">Voucher</div>
+        <div class="text-muted" style="font-size:12px;">Valid for SLOAN only</div>
+      </div>
+      <button class="btn btn-redeem" onclick="redeemVoucher(2, this)">Redeem</button>
+      <span class="tag-redeemed">Redeemed</span>
+    </div>
+
+    <!-- id 3 -->
+    <div class="voucher-card" data-id="3">
+      <div><div class="voucher-value">₱2,858.45</div></div>
+      <div class="voucher-body">
+        <div class="fw-bold">Voucher</div>
+        <div class="text-muted" style="font-size:12px;">Valid for SLOAN only</div>
+      </div>
+      <button class="btn btn-redeem" onclick="redeemVoucher(3, this)">Redeem</button>
+      <span class="tag-redeemed">Redeemed</span>
+    </div>
+
+    <!-- id 4 -->
+    <div class="voucher-card" data-id="4">
+      <div><div class="voucher-value">₱2,858.45</div></div>
+      <div class="voucher-body">
+        <div class="fw-bold">Voucher</div>
+        <div class="text-muted" style="font-size:12px;">Valid for SLOAN only</div>
+      </div>
+      <button class="btn btn-redeem" onclick="redeemVoucher(4, this)">Redeem</button>
+      <span class="tag-redeemed">Redeemed</span>
+    </div>
+
+    <!-- id 5 -->
+    <div class="voucher-card" data-id="5">
+      <div><div class="voucher-value">₱2,858.45</div></div>
+      <div class="voucher-body">
+        <div class="fw-bold">Voucher</div>
+        <div class="text-muted" style="font-size:12px;">Valid for SLOAN only</div>
+      </div>
+      <button class="btn btn-redeem" onclick="redeemVoucher(5, this)">Redeem</button>
+      <span class="tag-redeemed">Redeemed</span>
+    </div>
+
+    <!-- id 6 -->
+    <div class="voucher-card" data-id="6">
+      <div><div class="voucher-value">₱2,858.45</div></div>
+      <div class="voucher-body">
+        <div class="fw-bold">Voucher</div>
+        <div class="text-muted" style="font-size:12px;">Valid for SLOAN only</div>
+      </div>
+      <button class="btn btn-redeem" onclick="redeemVoucher(6, this)">Redeem</button>
+      <span class="tag-redeemed">Redeemed</span>
+    </div>
+
+    <!-- id 7 -->
+    <div class="voucher-card" data-id="7">
+      <div><div class="voucher-value">₱2,858.45</div></div>
+      <div class="voucher-body">
+        <div class="fw-bold">Voucher</div>
+        <div class="text-muted" style="font-size:12px;">Valid for SLOAN only</div>
+      </div>
+      <button class="btn btn-redeem" onclick="redeemVoucher(7, this)">Redeem</button>
+      <span class="tag-redeemed">Redeemed</span>
+    </div>
+
+    <!-- id 8 -->
+    <div class="voucher-card" data-id="8">
+      <div><div class="voucher-value">₱2,858.45</div></div>
+      <div class="voucher-body">
+        <div class="fw-bold">Voucher</div>
+        <div class="text-muted" style="font-size:12px;">Valid for SLOAN only</div>
+      </div>
+      <button class="btn btn-redeem" onclick="redeemVoucher(8, this)">Redeem</button>
+      <span class="tag-redeemed">Redeemed</span>
+    </div>
+
+    <!-- id 9 -->
+    <div class="voucher-card" data-id="9">
+      <div><div class="voucher-value">₱2,858.45</div></div>
+      <div class="voucher-body">
+        <div class="fw-bold">Voucher</div>
+        <div class="text-muted" style="font-size:12px;">Valid for SLOAN only</div>
+      </div>
+      <button class="btn btn-redeem" onclick="redeemVoucher(9, this)">Redeem</button>
+      <span class="tag-redeemed">Redeemed</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const cooldownHours = 72;
+
+  // Load from localStorage
+  let redeemedVouchers = JSON.parse(localStorage.getItem("redeemed_vouchers") || "[]");
+
+  // On load: apply redeemed state to previously redeemed vouchers
+  window.onload = function () {
+    redeemedVouchers.forEach(id => {
+      const card = document.querySelector('.voucher-card[data-id="'+id+'"]');
+      if (card) {
+        applyRedeemedState(card);
+      }
+    });
+  };
+
+  function redeemVoucher(id, buttonElement) {
+    const now = Date.now();
+    const lastRedeem = localStorage.getItem("last_redeem_timestamp");
+    const alreadyRedeemedBefore = redeemedVouchers.length > 0; // may naunang na-redeem na
+
+    // If may naunang redeemed at di pa tapos cooldown → alert lang
+    if (alreadyRedeemedBefore && lastRedeem && now - lastRedeem < cooldownHours * 3600 * 1000) {
+      showCooldownAlert(lastRedeem, now);
+      return;
+    }
+
+    const card = buttonElement.closest(".voucher-card");
+
+    // If this voucher is already in list, do nothing
+    if (redeemedVouchers.includes(id)) {
+      // optional: show "already used" alert, pero ayaw mo na, so wag na
+      return;
+    }
+
+    // FIRST or allowed redeem → turn to Redeemed
+    applyRedeemedState(card);
+
+    // Save voucher as redeemed permanent
+    redeemedVouchers.push(id);
+    localStorage.setItem("redeemed_vouchers", JSON.stringify(redeemedVouchers));
+
+    // Start/update cooldown time
+    localStorage.setItem("last_redeem_timestamp", now);
+  }
+
+  function applyRedeemedState(card) {
+    const btn = card.querySelector(".btn-redeem");
+    const tag = card.querySelector(".tag-redeemed");
+
+    if (btn) {
+      btn.textContent = "Redeemed";
+      btn.classList.add("btn-redeemed");
+      btn.disabled = true;
+    }
+    if (tag) {
+      tag.classList.add("show");
+    }
+  }
+
+  function showCooldownAlert(last, now) {
+    const msLeft = cooldownHours * 3600 * 1000 - (now - last);
+    const hoursLeft = Math.ceil(msLeft / (3600 * 1000));
+
+    const alertBox = document.getElementById("centerAlert");
+    const alertText = document.getElementById("alertText");
+    alertText.innerHTML = `
+      ⚠️ NEXT REDEEM AVAILABLE IN<br>
+      <span style="font-size:32px;">${hoursLeft} HOURS</span>
+    `;
+    alertBox.style.display = "block";
+  }
+
+  function closeAlert() {
+    document.getElementById("centerAlert").style.display = "none";
+  }
+</script>
+
+</body>
+</html>

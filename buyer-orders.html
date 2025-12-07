@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders — BlueBite</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .orders-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .orders-header h2 {
+            font-size: 28px;
+            color: #1657d6;
+        }
+
+        .status-label {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        .status-placed     { background: #dce9ff; color:#1657d6; }
+        .status-preparing  { background: #fff3cd; color:#b48a00; }
+        .status-ready      { background: #c4ffda; color:#0e8c3f; }
+        .status-delivery   { background: #ffedd6; color:#cb6e00; }
+        .status-delivered  { background: #d1ffd1; color:#0d8c0d; }
+        .status-completed  { background: #e0e0e0; color:#555; }
+        .status-cancelled  { background: #ffe4e6; color:#b91c1c; }
+
+        .order-card {
+            background: #fff;
+            padding: 18px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .order-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .order-store {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .order-details {
+            font-size: 14px;
+            margin-top: 6px;
+        }
+
+        .order-details p {
+            margin: 2px 0;
+        }
+
+        /* TIMELINE */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0 8px;
+            gap: 4px;
+        }
+
+        .timeline-step {
+            flex: 1;
+            text-align: center;
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .timeline-step .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            border: 2px solid #d1d5db;
+            margin: 0 auto 4px;
+            background: #fff;
+        }
+
+        .timeline-step.active {
+            color: #1657d6;
+        }
+
+        .timeline-step.active .dot {
+            border-color: #1657d6;
+            background: #1657d6;
+        }
+
+        /* ITEMS LIST */
+        .items-title {
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .order-items-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 4px 0 0;
+            font-size: 13px;
+        }
+
+        .order-items-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 0;
+            border-bottom: 1px dashed #e5e7eb;
+        }
+
+        .order-items-list li:last-child {
+            border-bottom: none;
+        }
+
+        .order-items-list small {
+            color: #6b7280;
+        }
+
+        /* CONTACT SELLER */
+        .contact-box {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #4b5563;
+        }
+
+        .contact-buttons {
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .contact-btn {
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .contact-btn.primary {
+            background: #16a34a;
+            color: #fff;
+        }
+
+        .contact-btn.secondary {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .contact-btn span {
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR (updated, no Menu) -->
+    <div class="navbar">
+        <h1>BlueBite</h1>
+        <div>
+            <a href="buyer-dashboard.html">Dashboard</a>
+            <a href="buyer-stores.html">Stores</a>
+            <a href="buyer-cart.html">Cart</a>
+            <a href="buyer-orders.html">Orders</a>
+            <a href="buyer-completed.html">Completed</a>
+            <a href="#" onclick="Auth.logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="orders-header">
+            <h2>My Orders 📦</h2>
+            <p class="subtext">Track your order status in real-time</p>
+        </div>
+
+        <!-- ORDERS LIST -->
+        <div id="orderList">
+            <!-- Auto-loaded by JS -->
+        </div>
+
+    </div>
+
+    <!-- OPTIONAL: Toast reused from other pages
+    <div id="toast" class="toast"></div>
+    -->
+
+    <script type="module">
+        import * as Buyer from "./js/buyer.js";
+        import * as Auth from "./js/auth.js";
+
+        Buyer.loadBuyerOrders();
+        // Kung gusto mo auto-refresh every 10s:
+        // setInterval(() => Buyer.loadBuyerOrders(true), 10000);
+
+        window.Auth = Auth;
+    </script>
+
+</body>
+</html>

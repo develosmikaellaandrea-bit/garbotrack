@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart — BlueBite</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .cart-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .cart-header h2 {
+            font-size: 28px;
+            color: #1657d6;
+        }
+
+        .cart-item {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qty-controls button {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+        }
+
+        .cart-summary {
+            background: white;
+            padding: 20px;
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+
+        #totalPrice {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1657d6;
+        }
+
+        /* CHECKOUT FORM */
+        .checkout-box {
+            background: white;
+            padding: 20px;
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            max-width: 500px;
+            margin: auto;
+            margin-top: 25px;
+        }
+
+        .checkout-box input,
+        .checkout-box select,
+        .checkout-box textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h1>BlueBite</h1>
+        <div>
+            <a href="buyer-dashboard.html">Dashboard</a>
+            <a href="buyer-menu.html">Menu</a>
+            <a href="buyer-cart.html">Cart</a>
+            <a href="buyer-orders.html">Orders</a>
+            <a href="#" onclick="Auth.logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="cart-header">
+            <h2>Your Cart 🛒</h2>
+            <p class="subtext">Review your items before checking out</p>
+        </div>
+
+        <!-- CART ITEMS -->
+        <div id="cartList">Loading cart...</div>
+
+        <!-- CART SUMMARY -->
+        <div class="cart-summary">
+            <h3>Total Amount</h3>
+            <div id="totalPrice">₱0.00</div>
+        </div>
+
+        <!-- CHECKOUT FORM (ON SAME PAGE) -->
+        <div class="checkout-box">
+            <h3>Checkout Details</h3>
+
+            <input id="name" placeholder="Full Name">
+            <input id="phone" placeholder="Phone Number">
+            <input id="address" placeholder="Complete Address">
+
+            <select id="payment">
+                <option value="">Select Payment Method</option>
+                <option value="COD">Cash on Delivery</option>
+                <option value="GCash">GCash</option>
+            </select>
+
+            <textarea id="notes" placeholder="Notes (optional)" rows="3"></textarea>
+
+            <button style="width:100%; margin-top:15px;" onclick="Cart.placeOrder()">
+                Place Order ✔️
+            </button>
+        </div>
+
+    </div>
+
+    <!-- SCRIPT LOADER -->
+    <script type="module">
+        import * as Cart from "./js/cart.js";
+        import * as Auth from "./js/auth.js";
+
+        Cart.loadCart();
+        window.Cart = Cart;
+        window.Auth = Auth;
+    </script>
+
+</body>
+</html>
